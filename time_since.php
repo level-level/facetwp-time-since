@@ -121,12 +121,12 @@ class FacetWP_Facet_Time_Since
 (function($) {
     wp.hooks.addAction('facetwp/load/time_since', function($this, obj) {
         $this.find('.facet-source').val(obj.source);
-        $this.find('.type-time_since .facet-choices').val(obj.choices);
+        $this.find('.facet-choices').val(obj.choices);
     });
 
     wp.hooks.addFilter('facetwp/save/time_since', function($this, obj) {
         obj['source'] = $this.find('.facet-source').val();
-        obj['choices'] = $this.find('.type-time_since .facet-choices').val();
+        obj['choices'] = $this.find('.facet-choices').val();
         return obj;
     });
 })(jQuery);
@@ -141,7 +141,15 @@ class FacetWP_Facet_Time_Since
     function front_scripts() {
 ?>
 
-<link href="<?php echo WP_CONTENT_URL; ?>/plugins/facetwp-time-since/assets/css/front.css" rel="stylesheet">
+<style>
+.facetwp-radio {
+    cursor: pointer;
+}
+
+.facetwp-radio.selected {
+    font-weight: bold;
+}
+</style>
 
 <script>
 (function($) {
@@ -178,7 +186,7 @@ class FacetWP_Facet_Time_Since
      */
     function settings_html() {
 ?>
-        <tr class="facetwp-conditional type-time_since">
+        <tr>
             <td>
                 <?php _e('Choices', 'fwp'); ?>:
                 <div class="facetwp-tooltip">
