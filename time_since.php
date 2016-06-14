@@ -119,15 +119,17 @@ class FacetWP_Facet_Time_Since
 ?>
 <script>
 (function($) {
-    wp.hooks.addAction('facetwp/load/time_since', function($this, obj) {
-        $this.find('.facet-source').val(obj.source);
-        $this.find('.facet-choices').val(obj.choices);
-    });
-
-    wp.hooks.addFilter('facetwp/save/time_since', function($this, obj) {
-        obj['source'] = $this.find('.facet-source').val();
-        obj['choices'] = $this.find('.facet-choices').val();
-        return obj;
+    $(function() {
+        wp.hooks.addAction('facetwp/load/time_since', function($this, obj) {
+            $this.find('.facet-source').val(obj.source);
+            $this.find('.facet-choices').val(obj.choices);
+        });
+    
+        wp.hooks.addFilter('facetwp/save/time_since', function($this, obj) {
+            obj['source'] = $this.find('.facet-source').val();
+            obj['choices'] = $this.find('.facet-choices').val();
+            return obj;
+        });
     });
 })(jQuery);
 </script>
