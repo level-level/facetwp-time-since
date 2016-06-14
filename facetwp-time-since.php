@@ -3,12 +3,12 @@
 Plugin Name: FacetWP - Time Since
 Plugin URI: https://facetwp.com/
 Description: "Time Since" facet
-Version: 1.2
-Author: Matt Gibbs
+Version: 1.2.1
+Author: FacetWP, LLC
 Author URI: https://facetwp.com/
 GitHub Plugin URI: https://github.com/FacetWP/facetwp-time-since
 
-Copyright 2015 Matt Gibbs
+Copyright 2016 FacetWP, LLC
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
