@@ -10,8 +10,6 @@ GitHub URI: facetwp/facetwp-time-since
 
 defined( 'ABSPATH' ) or exit;
 
-include( dirname( __FILE__ ) . '/github-updater.php' );
-
 /**
  * WordPress init hook
  */
