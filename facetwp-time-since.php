@@ -111,15 +111,15 @@ class FacetWP_Facet_Time_Since
         $values = (array) $params['values'];
         $selected_values = (array) $params['selected_values'];
 
-        $is_empty = empty( $selected_values ) ? ' selected' : '';
+        $is_empty = empty( $selected_values ) ? ' checked' : '';
         $output .= '<div class="facetwp-radio' . $is_empty  . '" data-value="">' . __( 'Any', 'fwp' ) . '</div>';
 
         foreach ( $values as $result ) {
-            $display_value = $result['facet_display_value'];
+            $display_value = esc_html( $result['facet_display_value'] );
             $safe_value = FWP()->helper->safe_value( $display_value );
-            $selected = in_array( $safe_value, $selected_values ) ? ' selected' : '';
+            $selected = in_array( $safe_value, $selected_values ) ? ' checked' : '';
             $display_value .= " <span class='counts'>(" . $result['counter'] . ")</span>";
-            $output .= '<div class="facetwp-radio' . $selected . '" data-value="' . $safe_value . '">' . $display_value . '</div>';
+            $output .= '<div class="facetwp-radio' . $selected . '" data-value="' . esc_attr( $safe_value ) . '">' . $display_value . '</div>';
         }
 
         return $output;
@@ -183,21 +183,11 @@ class FacetWP_Facet_Time_Since
     function front_scripts() {
 ?>
 
-<style>
-.facetwp-radio {
-    cursor: pointer;
-}
-
-.facetwp-radio.selected {
-    font-weight: bold;
-}
-</style>
-
 <script>
 (function($) {
     wp.hooks.addAction('facetwp/refresh/time_since', function($this, facet_name) {
         var selected_values = [];
-        $this.find('.facetwp-radio.selected').each(function() {
+        $this.find('.facetwp-radio.checked').each(function() {
             var val = $(this).attr('data-value');
             if ('' != val) {
                 selected_values.push(val);
@@ -219,8 +209,8 @@ class FacetWP_Facet_Time_Since
     wp.hooks.addAction('facetwp/ready', function() {
         $(document).on('click', '.facetwp-radio', function() {
             var $facet = $(this).closest('.facetwp-facet');
-            $facet.find('.facetwp-radio').removeClass('selected');
-            $(this).addClass('selected');
+            $facet.find('.facetwp-radio').removeClass('checked');
+            $(this).addClass('checked');
             if ('' != $(this).attr('data-value')) {
                 FWP.static_facet = $facet.attr('data-name');
             }
