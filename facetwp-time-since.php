@@ -2,7 +2,7 @@
 /*
 Plugin Name: FacetWP - Time Since
 Description: "Time Since" facet
-Version: 1.3.2
+Version: 1.3.3
 Author: FacetWP, LLC
 Author URI: https://facetwp.com/
 GitHub URI: facetwp/facetwp-time-since
@@ -165,7 +165,7 @@ class FacetWP_Facet_Time_Since
             $this.find('.facet-choices').val(obj.choices);
         });
     
-        wp.hooks.addFilter('facetwp/save/time_since', function($this, obj) {
+        wp.hooks.addFilter('facetwp/save/time_since', function(obj, $this) {
             obj['source'] = $this.find('.facet-source').val();
             obj['choices'] = $this.find('.facet-choices').val();
             return obj;
