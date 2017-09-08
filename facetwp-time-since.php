@@ -14,11 +14,10 @@ defined( 'ABSPATH' ) or exit;
 /**
  * FacetWP registration hook
  */
-function fwp_time_since_facet( $facet_types ) {
+add_filter( 'facetwp_facet_types', function( $facet_types ) {
     $facet_types['time_since'] = new FacetWP_Facet_Time_Since();
     return $facet_types;
-}
-add_filter( 'facetwp_facet_types', 'fwp_time_since_facet' );
+} );
 
 
 /**
@@ -52,11 +51,27 @@ class FacetWP_Facet_Time_Since
 
 
     /**
+     * Is the format in the future?
+     */
+    function is_future( $format ) {
+        if ( '+' == substr( $format, 0, 1 ) ) {
+            return true;
+        }
+        elseif ( 'next' == substr( $format, 0, 4 ) ) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    /**
      * Load the available choices
      */
     function load_values( $params ) {
         global $wpdb;
 
+        $output = array();
         $facet = $params['facet'];
         $where_clause = $params['where_clause'];
 
@@ -64,30 +79,33 @@ class FacetWP_Facet_Time_Since
         SELECT f.facet_display_value
         FROM {$wpdb->prefix}facetwp_index f
         WHERE f.facet_name = '{$facet['name']}' $where_clause";
-        $results = $wpdb->get_results( $sql, ARRAY_A );
+        $results = $wpdb->get_col( $sql );
 
         // Parse facet choices
         $choices = $this->parse_choices( $facet['choices'] );
 
         // Loop through the results
-        foreach ( $results as $result ) {
-            $post_time = (int) strtotime( $result['facet_display_value'] );
+        foreach ( $results as $val ) {
+            $post_time = (int) strtotime( $val );
             foreach ( $choices as $key => $choice ) {
                 $choice_time = $choice['seconds'];
 
-                // last week, etc.
-                if ( $choice_time < time() && $post_time >= $choice_time ) {
-                    $choices[ $key ]['counter']++;
-                }
                 // next week, etc.
-                elseif ( $choice_time > time() && $post_time <= $choice_time ) {
-                    $choices[ $key ]['counter']++;
+                if ( $this->is_future( $choice['format'] ) ) {
+                    if ( $post_time <= $choice_time && $post_time > time() ) {
+                        $choices[ $key ]['counter']++;
+                    }
+                }
+                // last week, etc.
+                else {
+                    if ( $post_time >= $choice_time && $post_time < time() ) {
+                        $choices[ $key ]['counter']++;
+                    }
                 }
             }
         }
 
         // Return an associative array
-        $output = array();
         foreach ( $choices as $choice ) {
             if ( 0 < $choice['counter'] ) {
                 $output[] = array(
@@ -114,11 +132,11 @@ class FacetWP_Facet_Time_Since
         $is_empty = empty( $selected_values ) ? ' checked' : '';
         $output .= '<div class="facetwp-radio' . $is_empty  . '" data-value="">' . __( 'Any', 'fwp' ) . '</div>';
 
-        foreach ( $values as $result ) {
-            $display_value = esc_html( $result['facet_display_value'] );
+        foreach ( $values as $row ) {
+            $display_value = esc_html( $row['facet_display_value'] );
             $safe_value = FWP()->helper->safe_value( $display_value );
             $selected = in_array( $safe_value, $selected_values ) ? ' checked' : '';
-            $display_value .= " <span class='counts'>(" . $result['counter'] . ")</span>";
+            $display_value .= " <span class='counts'>(" . $row['counter'] . ")</span>";
             $output .= '<div class="facetwp-radio' . $selected . '" data-value="' . esc_attr( $safe_value ) . '">' . $display_value . '</div>';
         }
 
@@ -137,18 +155,27 @@ class FacetWP_Facet_Time_Since
         $selected_values = is_array( $selected_values ) ? $selected_values[0] : $selected_values;
 
         $choices = $this->parse_choices( $facet['choices'] );
-        foreach ( $choices as $key => $data ) {
-            $safe_value = FWP()->helper->safe_value( $data['label'] );
+
+        foreach ( $choices as $key => $choice ) {
+            $safe_value = FWP()->helper->safe_value( $choice['label'] );
             if ( $safe_value === $selected_values ) {
-                $selected_values = date( 'Y-m-d H:i:s', (int) $data['seconds'] );
-                break;
+                $selected_values = date( 'Y-m-d H:i:s', (int) $choice['seconds'] );
+
+                if ( $this->is_future( $choice['format'] ) ) {
+                    $where_clause = "facet_value <= '$selected_values' AND facet_value > NOW()";
+                }
+                else {
+                    $where_clause = "facet_value >= '$selected_values' AND facet_value < NOW()";
+                }
+
+                $sql = "
+                SELECT DISTINCT post_id FROM {$wpdb->prefix}facetwp_index
+                WHERE facet_name = '{$facet['name']}' AND $where_clause";
+                return $wpdb->get_col( $sql );
             }
         }
 
-        $sql = "
-        SELECT DISTINCT post_id FROM {$wpdb->prefix}facetwp_index
-        WHERE facet_name = '{$facet['name']}' AND facet_value >= '$selected_values'";
-        return $wpdb->get_col( $sql );
+        return array();
     }
 
 
