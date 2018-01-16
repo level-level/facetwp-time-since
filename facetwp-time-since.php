@@ -2,7 +2,7 @@
 /*
 Plugin Name: FacetWP - Time Since
 Description: "Time Since" facet
-Version: 1.4
+Version: 1.4.1
 Author: FacetWP, LLC
 Author URI: https://facetwp.com/
 GitHub URI: facetwp/facetwp-time-since
