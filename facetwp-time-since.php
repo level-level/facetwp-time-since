@@ -233,16 +233,14 @@ class FacetWP_Facet_Time_Since
         return labels.join(' / ');
     });
 
-    wp.hooks.addAction('facetwp/ready', function() {
-        $(document).on('click', '.facetwp-radio', function() {
-            var $facet = $(this).closest('.facetwp-facet');
-            $facet.find('.facetwp-radio').removeClass('checked');
-            $(this).addClass('checked');
-            if ('' != $(this).attr('data-value')) {
-                FWP.static_facet = $facet.attr('data-name');
-            }
-            FWP.autoload();
-        });
+    $(document).on('click', '.facetwp-type-time_since .facetwp-radio', function() {
+        var $facet = $(this).closest('.facetwp-facet');
+        $facet.find('.facetwp-radio').removeClass('checked');
+        $(this).addClass('checked');
+        if ('' != $(this).attr('data-value')) {
+            FWP.static_facet = $facet.attr('data-name');
+        }
+        FWP.autoload();
     });
 })(jQuery);
 </script>
