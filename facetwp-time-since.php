@@ -235,10 +235,11 @@ class FacetWP_Facet_Time_Since
 
     $(document).on('click', '.facetwp-type-time_since .facetwp-radio', function() {
         var $facet = $(this).closest('.facetwp-facet');
+        var facet_name = $facet.attr('data-name');
         $facet.find('.facetwp-radio').removeClass('checked');
         $(this).addClass('checked');
         if ('' != $(this).attr('data-value')) {
-            FWP.static_facet = $facet.attr('data-name');
+            FWP.frozen_facets[facet_name] = 'soft';
         }
         FWP.autoload();
     });
