@@ -1,7 +1,7 @@
 {
     "name": "facetwp/facetwp-time-since",
     "description": "Time Since facet for FacetWP",
-    "type":"wordpress-plugin",
+    "type": "wordpress-plugin",
     "keywords": ["github", "wordpress", "plugin", "facetWP"],
     "homepage": "https://facetwp.com/",
     "license": "MIT",
